@@ -4,17 +4,9 @@ pipeline {
         nodejs 'nodejs-23-11-0'
     }
     stages {
-        stage('Test Connection') {
+        stage('Installing Dependencies') {
             steps {
-                echo "🎉 Jenkins is connected to GitHub Organization!"
-            }
-        }
-         stage('Check Nodejs Version') {
-            steps {
-                sh '''
-                   node -v
-                   npm -v
-                '''
+                sh 'npm install --no-audit'
             }
         }
     }
