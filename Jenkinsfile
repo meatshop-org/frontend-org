@@ -9,12 +9,25 @@ pipeline {
                 sh 'npm install --no-audit'
             }
         }
-        stage('Dependency Audit') {
-            steps {
-                sh '''
-                   npm audit --audit-level=critical
-                   echo $?
-                '''
+        stage('Dependency Scanning'){
+            parallel {
+                stage('Dependency Audit') {
+                    steps {
+                        sh '''
+                           npm audit --audit-level=critical
+                           echo $?
+                        '''
+                    }
+                }
+                stage('OWASP Dependency Check') {
+                    steps {
+                       dependencyCheck additionalArguments: '''
+                        --scan	\'./\'
+                        --out \'./\'
+                        --format \'ALL\'
+                        --prettyPrint''', odcInstallation: 'OWASP-DepCheck-12'
+                    }
+                }
             }
         }
     }
