@@ -18,7 +18,6 @@ pipeline {
                     steps {
                         sh '''
                            npm audit --audit-level=critical
-                           echo eladwy
                            echo $?
                         '''
                     }
