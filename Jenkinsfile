@@ -37,6 +37,7 @@ pipeline {
                     }
                 }
             }
+        }
         stage('SAST - SonarQube') {
             steps {
                 sh '''
@@ -47,7 +48,6 @@ pipeline {
                       -Dsonar.token=sqp_861e0d22bc1747893f2aec91b3b3fa95f2bccad4
                 '''
             }
-        }
         }
     }
 }
