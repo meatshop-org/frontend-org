@@ -3,6 +3,9 @@ pipeline {
     tools {
         nodejs 'nodejs-23-11-0'
     }
+    environment {
+        SONAR_SCANNER_HOME = tool 'sonarqube-scanner-710'
+    }
     stages {
         stage('Installing Dependencies') {
             steps {
@@ -34,6 +37,17 @@ pipeline {
                     }
                 }
             }
+        stage('SAST - SonarQube') {
+            steps {
+                sh '''
+                   $SONAR_SCANNER_HOME/bin/sonar-scanner \
+                      -Dsonar.projectKey=frontend-project \
+                      -Dsonar.sources=. \
+                      -Dsonar.host.url=http://192.168.127.131:9000 \
+                      -Dsonar.token=sqp_861e0d22bc1747893f2aec91b3b3fa95f2bccad4
+                '''
+            }
+        }
         }
     }
 }
