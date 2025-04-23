@@ -45,7 +45,8 @@ pipeline {
                     sh '''
                        $SONAR_SCANNER_HOME/bin/sonar-scanner \
                           -Dsonar.projectKey=frontend-project \
-                          -Dsonar.sources=./src 
+                          -Dsonar.sources=./src \
+                          -Dsonar.token=sqp_861e0d22bc1747893f2aec91b3b3fa95f2bccad4
                     '''
                     }
                     waitForQualityGate abortPipeline: true
