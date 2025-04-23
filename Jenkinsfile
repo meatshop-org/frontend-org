@@ -41,7 +41,7 @@ pipeline {
         stage('SAST - SonarQube') {
             steps {
                 timeout(time: 60, unit: 'SECONDS') {
-                    withSonarQubeEnv('sonar-qube-server') {
+                    withSonarQubeEnv(credentialsId: 'sonar-qube-token') {
                     sh '''
                        $SONAR_SCANNER_HOME/bin/sonar-scanner \
                           -Dsonar.projectKey=frontend-project \
