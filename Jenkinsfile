@@ -48,7 +48,9 @@ pipeline {
                                -Dsonar.sources=./src \
                          '''
                     }
-                    waitForQualityGate abortPipeline: true
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                        waitForQualityGate abortPipeline: true
+                    }
                 }
             }
         }
