@@ -28,6 +28,7 @@ pipeline {
                         --scan	\'./\'
                         --out \'./\'
                         --format \'ALL\'
+                        --disableYarnAudit \
                         --prettyPrint''', odcInstallation: 'OWASP-DepCheck-12'
 
                         dependencyCheckPublisher failedTotalCritical: 1, pattern: 'dependency-check-report.xml', stopBuild: true
@@ -39,13 +40,16 @@ pipeline {
         }
         stage('SAST - SonarQube') {
             steps {
-                sh '''
-                   $SONAR_SCANNER_HOME/bin/sonar-scanner \
-                      -Dsonar.projectKey=frontend-project \
-                      -Dsonar.sources=./src \
-                      -Dsonar.host.url=http://192.168.127.131:9000 \
-                      -Dsonar.token=sqp_861e0d22bc1747893f2aec91b3b3fa95f2bccad4
-                '''
+                timeout(time: 60, unit: 'SECONDS') {
+                    withSonarQubeEnv('sonar-qube-server') {
+                    sh '''
+                       $SONAR_SCANNER_HOME/bin/sonar-scanner \
+                          -Dsonar.projectKey=frontend-project \
+                          -Dsonar.sources=./src 
+                    '''
+                    }
+                    waitForQualityGate abortPipeline: true
+                }
             }
         }
     }
