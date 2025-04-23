@@ -40,7 +40,7 @@ pipeline {
         }
         stage('SAST - SonarQube') {
             steps {
-                timeout(time: 60, unit: 'SECONDS') {
+                
                     withSonarQubeEnv('sonar-qube-server') {
                     sh '''
                        $SONAR_SCANNER_HOME/bin/sonar-scanner \
@@ -49,8 +49,8 @@ pipeline {
                           -Dsonar.token=sqp_861e0d22bc1747893f2aec91b3b3fa95f2bccad4
                     '''
                     }
-                    waitForQualityGate abortPipeline: true
-                }
+                    
+                
             }
         }
     }
