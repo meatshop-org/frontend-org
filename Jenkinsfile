@@ -52,5 +52,10 @@ pipeline {
                 }
             }
         }
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t borhom11/frontend-meatshop:$GIT_COMMIT .'
+            }   
+        }
     }
 }
