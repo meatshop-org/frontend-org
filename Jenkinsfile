@@ -42,13 +42,12 @@ pipeline {
             steps {
                 timeout(time: 60, unit: 'SECONDS') {
                     withSonarQubeEnv('sonar-qube-server') {
-                        sonarQubeScanner(
-                            installationName: 'sonarqube-scanner-710',
-                            options: [
-                                "-Dsonar.projectKey=frontend-project",
-                                "-Dsonar.sources=./src"
-                            ]
-                        )
+                        sh '''
+                            $SONAR_SCANNER_HOME/bin/sonar-scanner \
+                               -Dsonar.projectKey=frontend-project \
+                               -Dsonar.sources=./src \
+                               
+                         '''
                     }
                      waitForQualityGate abortPipeline: true
                 }
