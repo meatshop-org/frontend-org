@@ -40,16 +40,15 @@ pipeline {
         }
         stage('SAST - SonarQube') {
             steps {
-                timeout(time: 60, unit: 'SECONDS') {
+                timeout(time: 120, unit: 'SECONDS') {
                     withSonarQubeEnv('sonar-qube-server') {
                         sh '''
                             $SONAR_SCANNER_HOME/bin/sonar-scanner \
                                -Dsonar.projectKey=frontend-project \
                                -Dsonar.sources=./src \
-                               
                          '''
                     }
-                     waitForQualityGate abortPipeline: true
+                    waitForQualityGate abortPipeline: true
                 }
             }
         }
