@@ -95,6 +95,13 @@ pipeline {
                 }
             }
         }
+        stage('Push Docker Image') {
+            steps {
+                withDockerRegistry(credentialsId: 'docker-hub-creds') {
+                    sh 'docker push borhom11/frontend-meatshop:$GIT_COMMIT'
+                }
+            }   
+        }
     }
     post {
         always {
