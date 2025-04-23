@@ -32,8 +32,6 @@ pipeline {
                         --prettyPrint''', odcInstallation: 'OWASP-DepCheck-12'
 
                         dependencyCheckPublisher failedTotalCritical: 1, pattern: 'dependency-check-report.xml', stopBuild: true
-                        publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, icon: '', keepAll: true, reportDir: './', reportFiles: 'dependency-check-jenkins.html', reportName: 'Dependency Check HTML Report', reportTitles: '', useWrapperFileDirectly: true])
-                        junit allowEmptyResults: true, keepProperties: true, testResults: 'dependency-check-junit.xml'
                     }
                 }
             }
@@ -100,8 +98,13 @@ pipeline {
     }
     post {
         always {
+            junit allowEmptyResults: true, keepProperties: true, testResults: 'dependency-check-junit.xml'
+
             junit allowEmptyResults: true, stdioRetention: '', testResults: 'trivy-image-MEDIUM-results.xml'
             junit allowEmptyResults: true, stdioRetention: '', testResults: 'trivy-image-CRITICAL-results.xml'
+
+            publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, icon: '', keepAll: true, reportDir: './', reportFiles: 'dependency-check-jenkins.html', reportName: 'Dependency Check HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+            
             publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, icon: '', keepAll: true, reportDir: './', reportFiles: 'trivy-image-MEDIUM-results.html', reportName: 'Trivy Image Medium vulnarability Report', reportTitles: '', useWrapperFileDirectly: true])
             publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, icon: '', keepAll: true, reportDir: './', reportFiles: 'trivy-image-CRITICAL-results.html', reportName: 'Trivy Image CRITICAL vulnarability Report', reportTitles: '', useWrapperFileDirectly: true])
         }
