@@ -102,6 +102,25 @@ pipeline {
                 }
             }   
         }
+
+        stage('Deploy - AWS EC2') {
+            steps {
+                script {
+                    sshagent(['aws-dev-deploy-ec2-instance']) {
+                        sh '''
+                            ssh -o StrictHostKeyChecking=no ubuntu@157.175.219.194 "
+                                if sudo docker ps -a | grep -q "frontend-meatshop"; then
+                                    echo "Container Found, Stopping..."
+                                    sudo docker stop "frontend-meatshop" && sudo docker rm "frontend-meatshop"
+                                    echo "Container stopped and removed"
+                                fi
+                                sudo docker run --name frontend-meatshop -p 80:80 -d borhom11/frontend-meatshop:$GIT_COMMIT
+                            "
+                        '''
+                    }
+                }
+            }   
+        }
     }
     post {
         always {
