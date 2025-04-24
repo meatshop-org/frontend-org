@@ -124,6 +124,20 @@ pipeline {
                 }
             }   
         }
+
+        stage('Integration Testing - AWS EC2') {
+            when {
+                branch "feature/*"
+            }
+            steps {
+                withAWS(credentials: 'aws-s3-ec2-lambda-creds', region: 'me-south-1') {
+                    sh '''
+                        bash integration-testing-ec2.sh
+                    '''
+                }
+            }
+        }
+        
     }
     post {
         always {
