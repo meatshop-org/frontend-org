@@ -8,7 +8,7 @@ Data=$(aws ec2 describe-instances)
 echo "Data - $Data"
 
 # Extract the Public DNS of the instance with the "dev-deploy" tag
-URL=$(echo "$Data" | jq -r '.Reservations[].Instances[] | select(.Tags[].Value == "dev-deploy") | .PublicDnsName')
+URL=$(echo "$Data" | jq -r '.Reservations[].Instances[] | select(.Tags[].Value == "pipeline-dev-deploy") | .PublicDnsName')
 
 # Check if URL was found
 if [[ -n "$URL" ]]; then
