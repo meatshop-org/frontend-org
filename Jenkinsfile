@@ -104,6 +104,9 @@ pipeline {
         }
 
         stage('Deploy - AWS EC2') {
+            when {
+                branch 'feature/*'
+            }
             steps {
                 script {
                     sshagent(['aws-dev-deploy-ec2-instance']) {
