@@ -9,6 +9,7 @@ echo "Data - $Data"
 
 # Extract the Public DNS of the instance with the "dev-deploy" tag
 URL=$(echo "$Data" | jq -r '.Reservations[].Instances[] | select(.Tags[].Value == "pipeline-dev-deploy") | .PublicDnsName')
+echo "URL - $URL"
 
 # Check if URL was found
 if [[ -n "$URL" ]]; then
