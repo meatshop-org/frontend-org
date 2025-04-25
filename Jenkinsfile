@@ -174,7 +174,7 @@ pipeline {
                         -H "Authorization: Bearer $FGGITHUB_TOKEN" \
                         -H "X-GitHub-Api-Version: 2022-11-28" \
                         https://api.github.com/repos/BRHM1/k8s-meatshop/pulls \
-                        -d '{"title":"Raised PR From CI/CD","body":"Please pull these awesome changes in!","head":"feature-$BUILD_ID","base":"main"}'
+                        -d '{"title":"Raised PR From CI/CD","body":"Please pull these awesome changes in!","head":"feature-${BUILD_ID}","base":"main"}'
                 '''
             }
         }
