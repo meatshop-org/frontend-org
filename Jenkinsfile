@@ -7,6 +7,7 @@ pipeline {
         SONAR_SCANNER_HOME = tool 'sonarqube-scanner-710'
         GITHUB_TOKEN = credentials('github-pat')
         USER_EMAIL = credentials('github-email')
+        FGGITHUB_TOKEN = credentials('FGgithub-pat')
     }
     stages {
         stage('Installing Dependencies') {
@@ -170,7 +171,7 @@ pipeline {
                     curl -L \
                         -X POST \
                         -H "Accept: application/vnd.github+json" \
-                        -H "Authorization: Bearer $GITHUB_TOKEN" \
+                        -H "Authorization: Bearer $FGGITHUB_TOKEN" \
                         -H "X-GitHub-Api-Version: 2022-11-28" \
                         https://api.github.com/repos/BRHM1/k8s-meatshop.git/pulls \
                         -d '{"title":"Raised PR From CI/CD","body":"Please pull these awesome changes in!","head":"feature-$BUILD_ID","base":"main"}'
