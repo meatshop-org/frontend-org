@@ -5,6 +5,7 @@ pipeline {
     }
     environment {
         SONAR_SCANNER_HOME = tool 'sonarqube-scanner-710'
+        GITHUB_TOKEN = credentials('github-pat')
     }
     stages {
         stage('Installing Dependencies') {
@@ -102,7 +103,6 @@ pipeline {
                 }
             }   
         }
-
         stage('Deploy - AWS EC2') {
             when {
                 branch 'feature/*'
@@ -124,7 +124,6 @@ pipeline {
                 }
             }   
         }
-
         stage('Integration Testing - AWS EC2') {
             when {
                 branch "feature/*"
@@ -137,10 +136,36 @@ pipeline {
                 }
             }
         }
+        stage('K8S Update Image Tag') {
+            when {
+                branch 'PR*'
+            }
+            steps {
+                sh 'git clone -b main https://github.com/BRHM1/k8s-meatshop.git'
+                dir('k8s-meatshop/frontend') {
+                    sh '''
+                        git checkout -b feature-$BUILD_ID
+                        sed -i "s|borhom11/frontend*|borhom11/frontend-meatshop:$GIT_COMMIT|g" deployment.yaml
+
+                        git config --global user.email $USER_EMAIL
+                        git remote set-url origin https://$GITHUB_TOKEN@github.com/BRHM1/k8s-meatshop.git
+                        git add . 
+                        git commit -m "FROM CI/CD - Update image tag to $GIT_COMMIT"
+                        git push origin feature-$BUILD_ID
+                    '''
+                }
+            }
+        }
         
     }
     post {
         always {
+            script {
+                if (fileExists('k8s-meatshop')) {
+                    sh 'rm -rf k8s-meatshop'
+                }
+            }
+
             junit allowEmptyResults: true, keepProperties: true, testResults: 'dependency-check-junit.xml'
 
             junit allowEmptyResults: true, stdioRetention: '', testResults: 'trivy-image-MEDIUM-results.xml'
