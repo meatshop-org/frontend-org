@@ -147,6 +147,7 @@ pipeline {
                 sh 'git clone -b main https://github.com/BRHM1/k8s-meatshop.git'
                 dir('k8s-meatshop/frontend') {
                     sh '''
+                        git checkout main
                         git checkout -b feature-$BUILD_ID
                         sed -i "s|borhom11/frontend[^ ]*|borhom11/frontend-meatshop:$GIT_COMMIT|g" deployment.yaml
 
