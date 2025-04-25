@@ -6,6 +6,7 @@ pipeline {
     environment {
         SONAR_SCANNER_HOME = tool 'sonarqube-scanner-710'
         GITHUB_TOKEN = credentials('github-pat')
+        USER_EMAIL = credentials('github-email')
     }
     stages {
         stage('Installing Dependencies') {
