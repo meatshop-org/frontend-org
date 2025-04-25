@@ -5,7 +5,6 @@ aws --version
 
 # Get EC2 instances data
 Data=$(aws ec2 describe-instances)
-echo "Data - $Data"
 
 # Extract the Public DNS of the instance with the "dev-deploy" tag
 URL=$(echo "$Data" | jq -r '.Reservations[].Instances[] | select(.Tags[].Value == "pipeline-dev-deploy") | .PublicDnsName')
@@ -19,3 +18,4 @@ else
   echo "Could not fetch a token/URL"
   exit 1
 fi
+

@@ -124,6 +124,7 @@ pipeline {
                 }
             }   
         }
+
         stage('Integration Testing - AWS EC2') {
             when {
                 branch "feature/*"
@@ -136,6 +137,7 @@ pipeline {
                 }
             }
         }
+
         stage('K8S Update Image Tag') {
             when {
                 branch 'PR*'
