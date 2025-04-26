@@ -105,40 +105,40 @@ pipeline {
                 }
             }   
         }
-        stage('Deploy - AWS EC2') {
-            when {
-                branch 'feature/*'
-            }
-            steps {
-                script {
-                    sshagent(['aws-dev-deploy-ec2-instance']) {
-                        sh '''
-                            ssh -o StrictHostKeyChecking=no ubuntu@157.175.219.194 "
-                                if sudo docker ps -a | grep -q "frontend-meatshop"; then
-                                    echo "Container Found, Stopping..."
-                                    sudo docker stop "frontend-meatshop" && sudo docker rm "frontend-meatshop"
-                                    echo "Container stopped and removed"
-                                fi
-                                sudo docker run --name frontend-meatshop -p 80:80 -d borhom11/frontend-meatshop:$GIT_COMMIT
-                            "
-                        '''
-                    }
-                }
-            }   
-        }
+        // stage('Deploy - AWS EC2') {
+        //     when {
+        //         branch 'feature/*'
+        //     }
+        //     steps {
+        //         script {
+        //             sshagent(['aws-dev-deploy-ec2-instance']) {
+        //                 sh '''
+        //                     ssh -o StrictHostKeyChecking=no ubuntu@157.175.219.194 "
+        //                         if sudo docker ps -a | grep -q "frontend-meatshop"; then
+        //                             echo "Container Found, Stopping..."
+        //                             sudo docker stop "frontend-meatshop" && sudo docker rm "frontend-meatshop"
+        //                             echo "Container stopped and removed"
+        //                         fi
+        //                         sudo docker run --name frontend-meatshop -p 80:80 -d borhom11/frontend-meatshop:$GIT_COMMIT
+        //                     "
+        //                 '''
+        //             }
+        //         }
+        //     }   
+        // }
 
-        stage('Integration Testing - AWS EC2') {
-            when {
-                branch "feature/*"
-            }
-            steps {
-                withAWS(credentials: 'aws-s3-ec2-lambda-creds', region: 'me-south-1') {
-                    sh '''
-                        bash integration-testing-ec2.sh
-                    '''
-                }
-            }
-        }
+        // stage('Integration Testing - AWS EC2') {
+        //     when {
+        //         branch "feature/*"
+        //     }
+        //     steps {
+        //         withAWS(credentials: 'aws-s3-ec2-lambda-creds', region: 'me-south-1') {
+        //             sh '''
+        //                 bash integration-testing-ec2.sh
+        //             '''
+        //         }
+        //     }
+        // }
 
         stage('K8S Update Image Tag') {
             when {
@@ -175,6 +175,40 @@ pipeline {
                         -H "X-GitHub-Api-Version: 2022-11-28" \
                         https://api.github.com/repos/BRHM1/k8s-meatshop/pulls \
                         -d '{"title":"Raised PR From CI/CD","body":"Please pull these awesome changes in!","head":"feature-'"$BUILD_ID"'","base":"main"}'
+                '''
+            }
+        }
+
+        stage('Simulating K8S Running Application') {
+            when {
+                branch 'PR*'
+            }
+            steps {
+                sh '''
+                    if sudo docker ps -a | grep -q "frontend-meatshop"; then
+                        echo "Container Found, Stopping..."
+                        sudo docker stop "frontend-meatshop" && sudo docker rm "frontend-meatshop"
+                        echo "Container stopped and removed"
+                    fi
+                    sudo docker run --name frontend-meatshop -p 80:80 -d borhom11/frontend-meatshop:$GIT_COMMIT
+                '''
+            }
+        }
+
+        stage('DAST - OWASP ZAP') {
+            when {
+                branch 'PR*'
+            }
+            steps {
+                sh '''
+                    chmod 777 $(pwd)
+                    docker run -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py \
+                        -t http://localhost:80 \
+                        -g gen.conf \
+                        -r zap_report.html \
+                        -w zap_report.md \
+                        -x zap_report.xml \
+                        -J zap_report.json
                 '''
             }
         }
