@@ -196,6 +196,17 @@ pipeline {
             }
         }
 
+        stage('PR Merged?'){
+            when {
+                branch 'PR*'
+            }
+            steps {
+                timeout(time: 1, unit: 'DAYS'){
+                    input message: 'Is PR Merged and Argocd Synced?', ok: 'YES! All Done'
+                }
+            }
+        }
+
         stage('DAST - OWASP ZAP') {
             when {
                 branch 'PR*'
@@ -204,7 +215,7 @@ pipeline {
                 sh '''
                     chmod 777 $(pwd)
                     docker run -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py \
-                        -t http://localhost:80 \
+                        -t http://192.168.127.131:80/ \
                         -g gen.conf \
                         -r zap_report.html \
                         -w zap_report.md \
