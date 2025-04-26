@@ -185,6 +185,7 @@ pipeline {
             }
             steps {
                 sh '''
+                    echo "Simulating"
                     if sudo docker ps -a | grep -q "frontend-meatshop"; then
                         echo "Container Found, Stopping..."
                         sudo docker stop "frontend-meatshop" && sudo docker rm "frontend-meatshop"
