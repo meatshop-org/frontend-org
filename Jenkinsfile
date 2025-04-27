@@ -212,7 +212,6 @@ pipeline {
             }
             steps {
                 sh '''
-                    echo "Hello, world!"
                     chmod 777 $(pwd)
                     docker run -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py \
                         -t http://192.168.127.131:80/ \
