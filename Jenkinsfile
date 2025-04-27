@@ -218,7 +218,7 @@ pipeline {
                         -r zap_report.html \
                         -w zap_report.md \
                         -x zap_report.xml \
-                        -J zap_report.json
+                        -J zap_report.json \
                         -c zap_ignore_rules
                 '''
             }
