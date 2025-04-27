@@ -220,7 +220,7 @@ pipeline {
                         -w zap_report.md \
                         -x zap_report.xml \
                         -J zap_report.json
-                        -c /zap/wrk/zap_ignore_rules
+                        -C zap_ignore_rules
                 '''
             }
         }
