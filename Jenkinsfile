@@ -216,12 +216,11 @@ pipeline {
                     chmod 777 $(pwd)
                     docker run -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py \
                         -t http://192.168.127.131:80/ \
-                        -g gen.conf \
                         -r zap_report.html \
                         -w zap_report.md \
                         -x zap_report.xml \
                         -J zap_report.json
-                        -C zap_ignore_rules
+                        -c zap_ignore_rules
                 '''
             }
         }
