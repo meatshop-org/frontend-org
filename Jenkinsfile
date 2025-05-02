@@ -195,13 +195,13 @@ pipeline {
             }
         }
 
-        stage('PR Merged?'){
+        stage('PR merged & ArgoCD synced?') {
             when {
                 branch 'PR*'
             }
-            steps {
-                timeout(time: 1, unit: 'DAYS'){
-                    input message: 'Is PR Merged and Argocd Synced?', ok: 'YES! All Done'
+            steps{
+                timeout(time: 1, unit: 'DAYS') {
+                    input message: 'Confirm that the manifest repo PR is merged and ArgoCD is synced.', ok: 'YES! All Done', submitter: 'admin'
                 }
             }
         }
@@ -222,6 +222,26 @@ pipeline {
                         -J zap_report.json \
                         -c zap_ignore_rules
                 '''
+            }
+        }
+
+        stage('Publish Reports - AWS S3') {
+            when {
+                branch 'PR*'
+            }
+            steps {
+                withAWS(credentials: 'aws-s3-ec2-lambda-creds', region: 'me-south-1') {
+                    sh '''
+                        mkdir reports-$BUILD_ID
+                        cp dependency*.* trivy*.* zap*.* reports-$BUILD_ID/
+                        ls reports-$BUILD_ID/
+                    '''
+                    s3Upload(
+                        file: "reports-$BUILD_ID",
+                        bucket: "meatshop-pipeline-reports",
+                        path: "frontend/reports-$BUILD_ID"
+                    )
+                }
             }
         }
         
