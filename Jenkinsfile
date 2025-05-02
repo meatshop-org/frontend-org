@@ -235,7 +235,6 @@ pipeline {
                         mkdir reports-$BUILD_ID
                         cp dependency*.* trivy*.* zap*.* reports-$BUILD_ID/
                         ls reports-$BUILD_ID/
-                        echo Hello
                     '''
                     s3Upload(
                         file: "reports-$BUILD_ID",
