@@ -113,7 +113,7 @@ pipeline {
                 script {
                     sshagent(['aws-dev-deploy-ec2-instance']) {
                         sh '''
-                            ssh -o StrictHostKeyChecking=no ubuntu@157.175.219.194 "
+                            ssh -o StrictHostKeyChecking=no ubuntu@16.24.154.180 "
                                 if sudo docker ps -a | grep -q "frontend-meatshop"; then
                                     echo "Container Found, Stopping..."
                                     sudo docker stop "frontend-meatshop" && sudo docker rm "frontend-meatshop"
@@ -176,22 +176,17 @@ pipeline {
                         https://api.github.com/repos/BRHM1/k8s-meatshop/pulls \
                         -d '{"title":"Raised PR From CI/CD","body":"Please pull these awesome changes in!","head":"feature-'"$BUILD_ID"'","base":"main"}'
                 '''
-            }
-        }
-
-        stage('Simulating K8S Running Application') {
-            when {
-                branch 'PR*'
-            }
-            steps {
-                sh '''
-                    if docker ps -a | grep -q "frontend-meatshop"; then
-                        echo "Container Found, Stopping..."
-                        docker stop "frontend-meatshop" && docker rm "frontend-meatshop"
-                        echo "Container stopped and removed"
-                    fi
-                    docker run --name frontend-meatshop -p 80:80 -d borhom11/frontend-meatshop:$GIT_COMMIT
-                '''
+                script {
+                    sh '''
+                        echo "Simulating K8S Running Application"
+                        if docker ps -a | grep -q "frontend-meatshop"; then
+                            echo "Container Found, Stopping..."
+                            docker stop "frontend-meatshop" && docker rm "frontend-meatshop"
+                            echo "Container stopped and removed"
+                        fi
+                        docker run --name frontend-meatshop -p 80:80 -d borhom11/frontend-meatshop:$GIT_COMMIT
+                    '''
+                }
             }
         }
 
